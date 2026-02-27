@@ -1,0 +1,22 @@
+ÀÄRX_Roots
+   ÃÄMAIN  0/341  Ram=0
+   ³  ÃÄ@cinit1  (Inline)  Ram=0
+   ³  ÃÄ@GETCH_BIU_1  0/11  Ram=0
+   ³  ÃÄ@PSTRINGC7_9600_55_53  0/89  Ram=4
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@delay_ms1  0/20  Ram=1
+   ³  ÃÄ@PSTRINGCN7_9600_55_53  0/90  Ram=5
+   ³  ÀÄ@delay_ms1  0/20  Ram=1
+   ÀÄRDA_isr  0/14  Ram=1
+      ÃÄ@GETCH_BIU_1  0/11  Ram=0
+      ÀÄ@GETCH_BIU_1  0/11  Ram=0

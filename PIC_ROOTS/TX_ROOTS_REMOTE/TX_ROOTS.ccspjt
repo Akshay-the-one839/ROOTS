@@ -1,0 +1,16 @@
+[PROJECT]
+Target=TX_ROOTS.hex
+Processor_Text=PIC16F690
+CCSVersion=5.015
+Compiler=PCM
+[Target Data]
+FileList=TX_ROOTS.c
+[Directories]
+Include=C:\Program Files (x86)\PICC\Devices\;C:\Program Files (x86)\PICC\Drivers\
+[TX_ROOTS.c]
+Type=4
+[mru-list]
+1=TX_ROOTS.c
+[Units]
+Count=1
+1=TX_ROOTS (main)

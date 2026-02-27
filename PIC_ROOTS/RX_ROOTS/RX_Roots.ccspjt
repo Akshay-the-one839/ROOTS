@@ -1,0 +1,16 @@
+[PROJECT]
+Target=RX_Roots.hex
+Processor_Text=PIC16F690
+CCSVersion=5.015
+Compiler=PCM
+[Target Data]
+FileList=RX_Roots.c
+[Directories]
+Include=C:\Program Files (x86)\PICC\Devices\;C:\Program Files (x86)\PICC\Drivers\
+[RX_Roots.c]
+Type=4
+[mru-list]
+1=RX_Roots.c
+[Units]
+Count=1
+1=RX_Roots (main)

@@ -13,18 +13,21 @@ unsigned long lastKeepAlive = 0;
 const unsigned long CLIENT_TIMEOUT     = 15000;
 const unsigned long KEEPALIVE_INTERVAL = 5000;
 
+HardwareSerial picSerial(1);  // UART1: TX=43, RX=44
+
 void blinkLED() { digitalWrite(LED_PIN, LOW); blinkTime = millis(); ledOn = true; }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(9600);          // debug only
+  picSerial.begin(9600, SERIAL_8N1, 44, 43);  // RX=44, TX=43
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, HIGH);
 
-  // ✅ Wait for PIC boot messages to finish, then flush
+  // Wait for PIC boot messages to finish, then flush
   delay(2000);
-  while(Serial.available()) Serial.read();
+  while(picSerial.available()) picSerial.read();
 
-  WiFi.softAP("ESP_RX", "12222223");
+  WiFi.softAP("ESP_RX", "11111111");
   server.begin();
 }
 
@@ -68,13 +71,13 @@ void loop() {
   static bool waitingEcho = false;
   static unsigned long echoTime = 0;
 
-  // ✅ After sending to PIC, flush echo after 50ms
+  // After sending to PIC, flush echo after 50ms
   if (waitingEcho && millis() - echoTime > 50) {
     waitingEcho = false;
-    while(Serial.available()) Serial.read();  // flush COMPIM echo
+    while(picSerial.available()) picSerial.read();  // flush COMPIM echo
   }
 
-  // ✅ if() not while() — prevents reading own echo
+  // if() not while() — prevents reading own echo
   if (!waitingEcho && client && client.connected() && client.available()) {
     char c = client.read();
     lastActivity = millis();
@@ -85,26 +88,26 @@ void loop() {
       wifiMsg = "#";
     } else if (wifiMsg.length() == 1) {
       wifiMsg += c;
-      Serial.print(wifiMsg);    // ✅ to PIC only
+      picSerial.print(wifiMsg);    // to PIC only
       blinkLED();
-      wifiMsg    = "";
-      waitingEcho = true;       // ✅ start echo guard
+      wifiMsg     = "";
+      waitingEcho = true;          // start echo guard
       echoTime    = millis();
     }
   }
 
   // ── PIC RX → TX ESP ──
-  // ✅ if() not while() + skip during echo guard
+  // if() not while() + skip during echo guard
   static String picMsg = "";
-  if (!waitingEcho && client && client.connected() && Serial.available()) {
-    char s = Serial.read();
+  if (!waitingEcho && client && client.connected() && picSerial.available()) {
+    char s = picSerial.read();
     lastActivity = millis();
 
     if (s == '#') {
       picMsg = "#";
     } else if (picMsg.length() == 1) {
       picMsg += s;
-      client.print(picMsg);     // ✅ to TX ESP
+      client.print(picMsg);     // to TX ESP
       blinkLED();
       picMsg = "";
     }

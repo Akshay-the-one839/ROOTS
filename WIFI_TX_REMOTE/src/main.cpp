@@ -1,10 +1,8 @@
-
-
 #include <Arduino.h>
 #include <WiFi.h>
 
 const char* ssid     = "ESP_RX";
-const char* password = "12222223";
+const char* password = "11111111";
 IPAddress serverIP(192, 168, 4, 1);
 WiFiClient client;
 
@@ -15,16 +13,19 @@ bool ledOn                  = false;
 unsigned long lastKeepAlive = 0;
 const unsigned long KEEPALIVE_INTERVAL = 5000;
 
+HardwareSerial picSerial(1);   // UART1: TX=43, RX=44
+
 void blinkLED() { digitalWrite(LED_PIN, LOW); blinkTime = millis(); ledOn = true; }
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(9600);          // debug only
+  picSerial.begin(9600, SERIAL_8N1, 44, 43);  // RX=44, TX=43
   pinMode(LED_PIN, OUTPUT);
   digitalWrite(LED_PIN, HIGH);
 
-  // ✅ Wait for PIC boot messages to finish, then flush
+  // Wait for PIC boot messages to finish, then flush
   delay(2000);
-  while(Serial.available()) Serial.read();
+  while(picSerial.available()) picSerial.read();
 
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -61,20 +62,20 @@ void loop() {
   static bool waitingEcho = false;
   static unsigned long echoTime = 0;
 
-  // ✅ After sending to PIC, flush echo after 50ms
+  // After sending to PIC, flush echo after 50ms
   if (waitingEcho && millis() - echoTime > 50) {
     waitingEcho = false;
-    while(Serial.available()) Serial.read();  // flush COMPIM echo
+    while(picSerial.available()) picSerial.read();  // flush COMPIM echo
   }
 
-  // ✅ if() not while() — one byte per loop
-  if (!waitingEcho && Serial.available()) {
-    char c = Serial.read();
+  // if() not while() — one byte per loop
+  if (!waitingEcho && picSerial.available()) {
+    char c = picSerial.read();
     if (c == '#') {
       picMsg = "#";
     } else if (picMsg.length() == 1) {
       picMsg += c;
-      client.print(picMsg);     // ✅ to RX ESP via WiFi
+      client.print(picMsg);     // to RX ESP via WiFi
       blinkLED();
       picMsg = "";
     }
@@ -83,7 +84,7 @@ void loop() {
   // ── RX ESP → PIC TX ──
   static String wifiMsg = "";
 
-  // ✅ if() not while() + skip during echo guard
+  // if() not while() + skip during echo guard
   if (!waitingEcho && client.available()) {
     char c = client.read();
     if (c == '$') {
@@ -92,10 +93,10 @@ void loop() {
       wifiMsg = "#";
     } else if (wifiMsg.length() == 1) {
       wifiMsg += c;
-      Serial.print(wifiMsg);    // ✅ to PIC only, no debug
+      picSerial.print(wifiMsg);    // to PIC only
       blinkLED();
       wifiMsg     = "";
-      waitingEcho = true;       // ✅ start echo guard
+      waitingEcho = true;          // start echo guard
       echoTime    = millis();
     }
   }
